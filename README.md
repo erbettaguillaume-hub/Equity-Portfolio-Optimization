@@ -7,9 +7,9 @@ On obtient à partir des données d'entraînements :
   - Un diagramme en bâton des poids optimaux pour chacune des actions
   - Une simulation MonteCarlo de portefeuilles permettant de mettre en lumière le portfeuille optimal et la frontière efficiente
     
-Dans un second temps :
+Dans un second temps sur les données de test:
   - Déterminer le Béta de ce portefeuille optimal
-  - Déterminer son "alpha de Jensen" grâce au CAPM
+  - Déterminer son "alpha de Jensen" à partir du CAPM
   - Calculer des indicateurs de performance (ratio de Sharpe, ratio de Sortino et ratio de Calmar)
 
 Ensuite, à partir des données de test, l'application contient également :
