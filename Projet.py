@@ -131,7 +131,7 @@ def compute_performance_metrics(
     portfolio = aligned["portfolio"]
     benchmark = aligned["benchmark"]
 
-    ann_ret = float(portfolio.mean() * TRADING_DAYS)
+    ann_ret = float(np.exp(portfolio.mean() * TRADING_DAYS) - 1.0)
     ann_vol = float(portfolio.std() * np.sqrt(TRADING_DAYS))
 
     downside_vol = float(portfolio[portfolio < 0].std() * np.sqrt(TRADING_DAYS))
