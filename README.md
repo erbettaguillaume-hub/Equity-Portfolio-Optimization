@@ -1,6 +1,6 @@
 # Equity Portfolio Optimisation (Streamlit)
 
-Application :contentReference[oaicite:1]{index=1} pour :
+Application pour :
 - optimiser un portefeuille long-only via Markowitz min-vol sous contrainte de rendement,
 - visualiser la frontière efficiente + nuage Monte Carlo,
 - backtester out-of-sample vs un benchmark et calculer des métriques de performance.
