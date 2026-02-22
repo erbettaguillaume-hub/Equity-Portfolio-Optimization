@@ -1,4 +1,4 @@
-# Equity Portfolio Optimisation (Streamlit)
+# Portfolio Optimisation (Streamlit)
 
 ## Présentation de l'application
     - Optimiser un portefeuille long-only via Markowitz min-vol sous contrainte de rendement
