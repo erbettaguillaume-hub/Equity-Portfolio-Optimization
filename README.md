@@ -21,7 +21,7 @@ pip install -r requirements.txt
 Après avoir exécuter le code, écrire dans le terminal la commande suivante : streamlit run projet.py
 
 ## Paramètres dans la barre latérale
-    - Les actions : liste séparée par virgules (ex: AAPL, MSFT, NVDA)
+    - Les actifs : liste séparée par virgules (ex: AAPL, MSFT, NVDA)
     - Benchmark : ticker Yahoo (ex: ^GSPC)
     - Début Historique : période d’entraînement
     - Début Backtest : période out-of-sample
