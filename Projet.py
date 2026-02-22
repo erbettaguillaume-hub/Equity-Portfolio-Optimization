@@ -5,6 +5,7 @@ import numpy as np
 import plotly.express as px
 import plotly.graph_objects as go
 from scipy.optimize import minimize
+import statsmodels.api as sm
 
 TRADING_DAYS = 252
 RISK_FREE_RATE = 0.02
@@ -114,6 +115,41 @@ def optimize_min_vol(
     return result.x, x0, bounds
 
 
+def alpha_beta_CAPM(
+    portfolio_rets: pd.Series,
+    bench_rets: pd.Series,
+    rf: float = RISK_FREE_RATE,
+) -> tuple[float, float, float, float, float, float]:
+    aligned = pd.concat(
+        [portfolio_rets.rename("portfolio"), bench_rets.rename("benchmark")],
+        axis=1,
+        join="inner",
+    ).dropna()
+
+    if aligned.empty:
+        raise ValueError("Pas assez de données communes pour estimer alpha/beta CAPM.")
+
+    rf_daily_log = np.log1p(rf) / TRADING_DAYS  # rf est annuel (effectif), returns sont des log-returns journaliers
+
+    excess_portfolio = aligned["portfolio"] - rf_daily_log
+    excess_bench     = aligned["benchmark"]  - rf_daily_log
+
+    # Estimer alpha et beta du portefeuille via excess_portfolio = alpha + beta * excess_bench + epsilon.
+    X = sm.add_constant(excess_bench.rename("excess_benchmark"))
+    model = sm.OLS(excess_portfolio, X).fit()
+    alpha_p = float(model.params["const"])
+    beta_p = float(model.params["excess_benchmark"])
+    erreur_portfolio = float(model.resid.std())
+
+    # Estimer alpha et beta du benchmark contre lui-même (référence interne).
+    model_bench = sm.OLS(excess_bench, X).fit()
+    alpha_b = float(model_bench.params["const"])
+    beta_b = float(model_bench.params["excess_benchmark"])
+    erreur_bench = float(model_bench.resid.std())
+
+    return alpha_p, beta_p, alpha_b, beta_b, erreur_portfolio, erreur_bench
+    
+
 def compute_performance_metrics(
     returns: pd.Series,
     bench_returns: pd.Series,
@@ -143,13 +179,7 @@ def compute_performance_metrics(
     max_dd = float(dd_series.min()) if not dd_series.empty else np.nan
     calmar = safe_divide(ann_ret, abs(max_dd)) if not pd.isna(max_dd) else np.nan
 
-    bench_var = float(benchmark.var())
-    beta = safe_divide(float(portfolio.cov(benchmark)), bench_var)
-
-    bench_ann_ret = float(benchmark.mean() * TRADING_DAYS)
-    alpha = np.nan
-    if not pd.isna(beta):
-        alpha = ann_ret - (rf + beta * (bench_ann_ret - rf))
+    
 
     metrics = {
         "Rendement Annuel": format_pct(ann_ret),
@@ -157,9 +187,7 @@ def compute_performance_metrics(
         "Ratio de Sharpe": format_num(sharpe),
         "Ratio de Sortino": format_num(sortino),
         "Ratio de Calmar": format_num(calmar),
-        "Max Drawdown": format_pct(max_dd),
-        "Bêta CAPM": format_num(beta),
-        "Alpha CAPM (Ann.)": format_pct(alpha),
+        "Max Drawdown": format_pct(max_dd)
     }
 
     return metrics, dd_series, cum_prices, ann_ret, ann_vol
@@ -404,9 +432,28 @@ def main() -> None:
             test_bench,
             test_bench,
         )
+        alpha_p, beta_p, alpha_b, beta_b, erreur_portfolio, erreur_bench = alpha_beta_CAPM(
+            portfolio_test_rets,
+            test_bench,
+        )
     except ValueError as exc:
         st.error(str(exc))
         st.stop()
+
+    metrics_portfolio.update(
+        {
+            "Alpha CAPM (annualisé)": format_pct(float(np.exp(alpha_p * TRADING_DAYS) - 1.0)),
+            "Beta CAPM": format_num(beta_p),
+            "Erreur résiduelle CAPM": format_pct(erreur_portfolio),
+        }
+    )
+    metrics_benchmark.update(
+        {
+            "Alpha CAPM (annualisé)": format_pct(float(np.exp(alpha_b * TRADING_DAYS) - 1.0)),
+            "Beta CAPM": format_num(beta_b),
+            "Erreur résiduelle CAPM": format_pct(erreur_bench),
+        }
+    )
     
     
     # =========================
