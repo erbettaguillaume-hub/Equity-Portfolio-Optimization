@@ -48,9 +48,9 @@ Sur la période **train**, l’app calcule :
 Puis elle résout :
 - **Objectif** : minimiser la **volatilité**
 - **Contraintes** :
-  - \(\sum_i w_i = 1\) (fully invested)
-  - \(0 \le w_i \le 1\) (pas de short / long-only)
-  - \(\mu^\top w \ge R_{\min}\) (rendement annuel minimum)
+  - fully invested
+  - pas de short / long-only
+  - rendement annuel minimum
 
 **Solveur** : `SLSQP` (scipy)
 
