@@ -5,12 +5,12 @@ J’ai développé un terminal d’optimisation de portefeuille & backtesting en
 L’idée est simple : séparer clairement la théorie (in-sample) de la réalité (out-of-sample).
 
 1. In-sample (période d’entraînement)
-    Estimer les paramètres de marché : rendements moyens & matrice de covariance (annualisés).
-    Résoudre un problème de Markowitz “Minimum Volatility” sous contraintes.
+    - Estimer les paramètres de marché : rendements moyens & matrice de covariance (annualisés).
+    - Résoudre un problème de Markowitz “Minimum Volatility” sous contraintes.
 
 2. Out-of-sample (période de backtest)
-    Appliquer l’allocation obtenue sur une période de test indépendante.
-    Comparer la performance et le risque à un benchmark (ex : S&P 500).
+    - Appliquer l’allocation obtenue sur une période de test indépendante.
+    - Comparer la performance et le risque à un benchmark (ex : S&P 500).
 
 3. Illustrer l'effet de diversification du portefeuille à l'aide des indices de performance.
 
@@ -22,11 +22,11 @@ L’idée est simple : séparer clairement la théorie (in-sample) de la réalit
 
 Depuis la sidebar, l’utilisateur définit :
 
-    Actifs (tickers Yahoo Finance, actions/indices/crypto possible)
-    Benchmark (ticker Yahoo)
-    Période historique (début de l’échantillon)
-    Début du backtest (split train/test)
-    Contrainte** : rendement annuel minimum (en %)
+   - Actifs (tickers Yahoo Finance, actions/indices/crypto possible)
+   - Benchmark (ticker Yahoo)
+   - Période historique (début de l’échantillon)
+   - Début du backtest (split train/test)
+   - Contrainte** : rendement annuel minimum (en %)
 
 ---
 
@@ -38,8 +38,8 @@ Annualisation standard : 252 jours de trading
 
  Split temporel strict :
 
-     Train : dates < début backtest
-      Test : dates ≥ début backtest
+    - Train : dates < début backtest
+    - Test : dates ≥ début backtest
 
 ---
 
@@ -47,16 +47,16 @@ Annualisation standard : 252 jours de trading
 
 Sur la période train, l’app calcule :
 
-    rendement moyen annualisé
-    covariance annualisée
+    - Rendement moyen annualisé
+    - Covariance annualisée
 
 Puis elle résout :
 
     Objectif : minimiser la volatilité 
     Contraintes :
-Somme des poids = 1
-Pas de position short
-Rendement annuel minimum
+        - Somme des poids = 1
+        - Pas de position short
+        - Rendement annuel minimum
 
 Solveur : SLSQP 
 
@@ -70,12 +70,12 @@ Sur la période test, l’app applique les poids optimaux (allocation fixe, type
 
 Métriques risque/performance :
 
-    Rendement annualisé
-    Volatilité annualisée
-    Sharpe (avec (rf) constant, paramétré à 2% annuel)
-    Sortino (downside volatility)
-    Max Drawdown
-    Calmar
+   - Rendement annualisé
+   - Volatilité annualisée
+   - Sharpe (avec (rf) constant, paramétré à 2% annuel)
+   - Sortino
+   - Max Drawdown
+   - Calmar
 
 Style / CAPM :
 
@@ -110,6 +110,6 @@ C’est une manière très visuelle de montrer l’écart entre paramètres esti
 
 🔍 Hypothèses & limites (assumées)
 
-    Long-only**, sans levier
+    Long-only, sans levier
     Pas de coûts de transaction, pas de slippage, pas de frais
     Pas de rebalancing dynamique (poids constants sur la période test)
